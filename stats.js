@@ -1,6 +1,6 @@
 // importando um módulo dentro do Node
 const os = require('os');
-
+const log = require('./logger');
 
 function getDadosOS (){
     var data = new Date();
@@ -18,11 +18,15 @@ function getDadosOS (){
     const stats = {
         livre: `${mem} MB`,
         total: `${total} MB`,
-        usado: `${percents} %`
+        usado: `${percents}%`
     }
     console.clear();
+    console.log("|  DADOS DE ARMAZENAMENTO  |");
     console.table(stats);
-    console.log(`Dados de : ${data.getHours()} : ${data.getMinutes()} : ${data.getSeconds()}`);
+    dataMessage = `Dados de : ${data.getHours()} : ${data.getMinutes()} : ${data.getSeconds()}`;
+    console.log(dataMessage);
+
+    log(`${dataMessage} -> ${JSON.stringify(stats)}\n`);
 }
 
 var readline = require('readline');
@@ -33,10 +37,19 @@ var leitor = readline.createInterface({
     output: process.stdout
 });
 
+console.log("==================================================");
+console.log("|💻 BEM VINDO AO MONITARADOR DE ARMAZENAMENTO 💻|");
+console.log("==================================================");
+
 leitor.question("Qual a frequência desejada do monitoramento em segundos?\n", function(answer) {
     var resp = answer;
+    resp = (resp <= 0 | isNaN(resp) ? 1 : resp);
     segundos = parseInt(resp)* 1000;
-    console.log("\Os dados serão processados daqui '" + resp + "' segundos");
+
+    console.log("\Os dados serão processados daqui '" + segundos/1000 + "' segundos");
     leitor.close();
+
+    log("frequência : " + segundos/1000 + " segundos\n");
+
     setInterval(getDadosOS, segundos);
 });
